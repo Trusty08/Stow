@@ -19,6 +19,7 @@ use soroban_sdk::contracterror;
 /// - 110-119: Storage & State
 /// - 120-129: Rewards
 /// - 130-139: Timelock
+/// - 140-149: Automation (rollover, conditional withdrawals)
 #[contracterror]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
 #[repr(u32)]
@@ -112,6 +113,16 @@ pub enum Error {
     /// A token callback attempted a nested token transfer.
     ReentrantCall = 115,
 
+    // --- Vault Split (100-109) ---
+    /// A split request already exists for this group and has not been executed.
+    SplitAlreadyRequested = 100,
+    /// This co-owner has already approved the pending split.
+    SplitAlreadyApproved = 101,
+    /// No pending (un-executed) split request exists for this id.
+    SplitNotPending = 102,
+    /// Not all co-owners have approved the split yet.
+    SplitNotFullyApproved = 103,
+
     // --- Rewards (120-129) ---
     /// The reward pool has insufficient funds; partial payment was made.
     RewardPoolShortfall = 120,
@@ -136,4 +147,13 @@ pub enum Error {
     // --- Group withdrawal approvals ---
     /// A group withdrawal request was already rejected or executed.
     WithdrawalRequestClosed = 123,
+
+    // --- Automation (140-149) ---
+    /// A conditional withdrawal's condition has not been met yet.
+    ConditionNotMet = 140,
+    /// A withdrawal condition is malformed (e.g. non-positive threshold or a
+    /// date that is already in the past).
+    InvalidCondition = 141,
+    /// No price oracle is configured, or the oracle call failed.
+    OracleUnavailable = 142,
 }
